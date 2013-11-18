@@ -1,3 +1,21 @@
 #!/usr/bin/env ruby
+# encoding: utf-8
 
 require 'vamboo'
+require 'thor'
+
+class VambooCLI < Thor
+  desc "init", "Create configuration files at /usr/local/etc/vamboo or VAMBOO_HOME"
+  def init
+  end
+
+  desc "full_backup","Backup all virtual machines there are written in ${VAMBOO_HOME}/vm_glass.list"
+  def full_backup
+  end
+
+  desc "backup NAME VMHD_PATH","Back up specified virtual machine there are VM_NAME, VMHD_PATH"
+  def backup(name, vmhd_path)
+  end
+end
+
+VambooCLI.start
