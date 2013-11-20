@@ -7,14 +7,22 @@ require 'thor'
 class VambooCLI < Thor
   desc "init", "Create configuration files at /usr/local/etc/vamboo or VAMBOO_HOME"
   def init
+    vamboo_home = Vamboo.default_vamboo_home
+  	FileUtils.mkdir_p(vamboo_home)
   end
 
   desc "full_backup","Backup all virtual machines there are written in ${VAMBOO_HOME}/vm_glass.list"
   def full_backup
+    vamboo = Vamboo.new(Vamboo.default_vamboo_home)
+    vamboo.machines.each do |machine|
+      machine.backup
+    end
   end
 
   desc "backup NAME VMHD_PATH","Back up specified virtual machine there are VM_NAME, VMHD_PATH"
   def backup(name, vmhd_path)
+    machine = # find virtual machine frome name AND path
+    machine.backup
   end
 end
 
