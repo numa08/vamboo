@@ -1,12 +1,10 @@
-require "domainlist"
-
 class VambooFile
 	Vamboofile = "Vamboofile"
 	attr_reader :vamboo_home
 
 	def self.createAt(vamboo_home)
 	  	FileUtils.mkdir_p(vamboo_home)
-	  	FileUtils.copy("./#{Vamboofile}.org", "#{vamboo_home}/#{Vamboofile}")
+	  	FileUtils.copy("#{File.dirname(__FILE__)}/#{Vamboofile}.org", "#{vamboo_home}/#{Vamboofile}")
 	end
 
 	def initialize(vamboo_home)
