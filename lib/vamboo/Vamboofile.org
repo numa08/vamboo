@@ -1,3 +1,4 @@
+require "vamboo/domainlist"
 DomainList.define do
 	#define your vm
 	#exsamble
