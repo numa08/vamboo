@@ -4,6 +4,9 @@ class VambooFile
 
 	def self.createAt(vamboo_home)
 	  	FileUtils.mkdir_p(vamboo_home)
+	  	if File.exist?("#{vamboo_home}/#{Vamboofile}")
+	  		return
+	  	end
 	  	FileUtils.copy("#{File.dirname(__FILE__)}/#{Vamboofile}.org", "#{vamboo_home}/#{Vamboofile}")
 	end
 
