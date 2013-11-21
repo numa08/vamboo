@@ -1,0 +1,5 @@
+DomainList.define do
+	#define your vm
+	#exsamble
+	#add("my_domay", "/path/to/domain/hd")
+end
