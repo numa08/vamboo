@@ -21,5 +21,6 @@ class Domain
 	end
 
 	def backup
+		p self
 	end
 end
