@@ -1,20 +1,30 @@
 #!/usr/bin/env ruby
 # encoding: utf-8
-
-require 'vamboo'
-require 'thor'
+require "vamboo"
+require "vamboo/vamboofile"
+require "thor"
 
 class VambooCLI < Thor
   desc "init", "Create configuration files at /usr/local/etc/vamboo or VAMBOO_HOME"
   def init
+    vamboo_home = Vamboo.default_vamboo_home
+    VambooFile.createAt(vamboo_home)
   end
 
   desc "full_backup","Backup all virtual machines there are written in ${VAMBOO_HOME}/vm_glass.list"
   def full_backup
+    vamboo = VambooKernel.new(Vamboo.default_vamboo_home)
+    vamboo.domains.each do |domain|
+      #TODO multi thread
+      domain.backup
+    end
   end
 
   desc "backup NAME VMHD_PATH","Back up specified virtual machine there are VM_NAME, VMHD_PATH"
   def backup(name, vmhd_path)
+    #vamboo = Vamboo.new(Vamboo.default_vamboo_home)
+    #domain = vamboo.findDomain(name, vmhd_path)
+    #domain.backup
   end
 end
 
