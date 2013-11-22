@@ -25,5 +25,14 @@ class Domain
 	end
 
 	def backup
+
+	end
+
+	def isDefined?
+		true
+	end
+
+	def vmhdIsExist?
+		true
 	end
 end
