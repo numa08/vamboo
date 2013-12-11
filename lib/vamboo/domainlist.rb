@@ -28,7 +28,7 @@ class Domain
 	end
 
 	def backup(target_path)
-		conn = Libvirt::open("qemu:///system").lookup_domain_by_name(@name)
+		conn = Libvirt::open("qemu:///system")
 		domain = conn.lookup_domain_by_name(@name)
 		tmp_path = "#{Vamboo.default_vamboo_home}/#{@name}"
 		domain.shutdown
