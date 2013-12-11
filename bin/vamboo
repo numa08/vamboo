@@ -12,11 +12,11 @@ class VambooCLI < Thor
   end
 
   desc "full_backup","Backup all virtual machines there are written in ${VAMBOO_HOME}/vm_glass.list"
-  def full_backup
+  def full_backup(dest_dir)
     vamboo = VambooKernel.new(Vamboo.default_vamboo_home)
     vamboo.domains.each do |domain|
       #TODO multi thread
-      domain.backup
+      domain.backup(dest_dir)
     end
   end
 
