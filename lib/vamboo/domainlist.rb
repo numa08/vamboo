@@ -43,7 +43,8 @@ class Domain
 		active = domain.active?
 		if active
 			log.info("Shutdown")
-			# domain.shutdown
+			domain.shutdown
+			sleep(10) while domain.active?
 		end
 
 		log.info("Dump xml")
@@ -62,7 +63,8 @@ class Domain
 
 		if active
 			log.info("Start")
-			# domain.create
+			domain.create
+			sleep(10) until domain.active?
 		end
 
 		log.info("Archive")
