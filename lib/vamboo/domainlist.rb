@@ -1,5 +1,6 @@
 require "libvirt"
 require "zlib"
+require "logger"
 
 class DomainList
 	attr_reader :list
@@ -28,32 +29,53 @@ class Domain
 	end
 
 	def backup(target_path)
+		log = Logger.new(STDOUT)
+		log.formatter = proc do |severity, datetime, progname, msg|
+   				"#{@name}:#{datetime}: #{msg}\n"
+		end
+
+
 		conn = Libvirt::open("qemu:///system")
 		domain = conn.lookup_domain_by_name(@name)
 		tmp_path = "#{Vamboo.default_vamboo_home}/#{@name}"
-		domain.shutdown
 		
-		FileUtils.mkdir_p(tmp_path)
-		File.open("#{tmp_path}/#{@name}.xml", "w") do |file|
-			xml = domain.xml_desc
-			file.write(xml)
-		end
-		File.open("#{vmhd_path}", "r") do |vmhd|
-			Zlib::GzipWriter.open("#{tmp_path}/#{@name}.img.gz") do |gz|
-				gz.puts(vmhd.read)
-			end
+		log.info("Start backup")
+		active = domain.active?
+		if active
+			log.info("Shutdown")
+			# domain.shutdown
 		end
 
-		domain.create
+		log.info("Dump xml")
+		# FileUtils.mkdir_p(tmp_path)
+		# File.open("#{tmp_path}/#{@name}.xml", "w") do |file|
+		# 	xml = domain.xml_desc
+		# 	file.write(xml)
+		# end
 
-		Zlib::GzipWriter.open("#{target_path}/#{@name}.tar.gz") do |archive|
-			out = Archive::Tar::Minitar::Output.new(archive)
-			Find.find("#{tmp_path}") do |file|
-				Archive::Tar::Minitar::pack_file(file, out)
-			end
-			out.close
-		end	
-		FileUtils.rmdir("#{tmp_path}", :force => true)
+		log.info("Compress vmhd")
+		# File.open("#{@vmhd_path}", "r") do |vmhd|
+		# 	Zlib::GzipWriter.open("#{tmp_path}/#{@name}.img.gz") do |gz|
+		# 		gz.puts(vmhd.read)
+		# 	end
+		# end
+
+		if active
+			log.info("Start")
+			# domain.create
+		end
+
+		log.info("Archive")
+		# Zlib::GzipWriter.open("#{target_path}/#{@name}.tar.gz") do |archive|
+		# 	out = Archive::Tar::Minitar::Output.new(archive)
+		# 	Find.find("#{tmp_path}") do |file|
+		# 		Archive::Tar::Minitar::pack_file(file, out)
+		# 	end
+		# 	out.close
+		# end	
+		# FileUtils.rmdir("#{tmp_path}", :force => true)
+
+		log.info("Complete backup")
 	end
 
 	def isDefined?
