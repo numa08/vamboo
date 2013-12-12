@@ -48,11 +48,11 @@ class Domain
 		end
 
 		log.info("Dump xml")
-		# FileUtils.mkdir_p(tmp_path)
-		# File.open("#{tmp_path}/#{@name}.xml", "w") do |file|
-		# 	xml = domain.xml_desc
-		# 	file.write(xml)
-		# end
+		FileUtils.mkdir_p(tmp_path)
+		File.open("#{tmp_path}/#{@name}.xml", "w") do |file|
+			xml = domain.xml_desc
+			file.write(xml)
+		end
 
 		log.info("Compress vmhd")
 		# File.open("#{@vmhd_path}", "r") do |vmhd|
