@@ -55,11 +55,16 @@ class Domain
 		end
 
 		log.info("Compress vmhd")
-		# File.open("#{@vmhd_path}", "r") do |vmhd|
-		# 	Zlib::GzipWriter.open("#{tmp_path}/#{@name}.img.gz") do |gz|
-		# 		gz.puts(vmhd.read)
-		# 	end
-		# end
+		File.open("#{@vmhd_path}", "rb") do |vmhd|
+			Zlib::GzipWriter.open("#{tmp_path}/#{@name}.img.gz", Zlib::BEST_COMPRESSION) do |gz|
+				offset = 0
+				length = 1024
+				while offset < vmhd.size
+					gz.print(IO.binread(vmhd.path, length, offset))
+					offset += length
+				end
+			end
+		end
 
 		if active
 			log.info("Start")
