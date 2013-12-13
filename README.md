@@ -2,28 +2,43 @@
 
 仮想マシンをお手軽にバックアップするためのツール、`virtual machine backup util`それが`vamboo`
 
-## Installation
+## インストール
 
-Add this line to your application's Gemfile:
+次のコマンドからアプリケーションをインストールできます
 
-    gem 'vamboo'
+	$ gem instal vamboo
 
-And then execute:
+ソースコードからビルドする場合は
 
-    $ bundle
+	$ rake build
+	$ rake install
 
-Or install it yourself as:
 
-    $ gem install vamboo
+## 使い方
 
-## Usage
+まず、設定ファイルの配置を行います。
 
-TODO: Write usage instructions here
+	vamboo init
 
-## Contributing
+デフォルトで`/usr/local/etc/vamboo`に`Vamboofile`が生成されます。また環境変数`VAMBOO_HOME`を定義していれば、その直下に`Vamboofile`が生成されます。
 
-1. Fork it
-2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Add some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create new Pull Request
+`Vamboofile`にはバックアップ対象となる仮想マシンの情報を入力します。
+
+
+```ruby
+require "vamboo/domainlist" 
+
+DomainList.define do 
+	#add("仮想マシンのドメイン名", "仮想ハードディスクのパス")
+	add("my_domay", "/path/to/domain/hd") 
+end
+```
+
+`Vamboofile`に記述された仮想マシンを全てバックアップを行うには、次のコマンドから行います。
+
+	vamboo full_backup [backup destination path]
+
+## TODO
+
+ - 特定の仮想マシンのバックアップ機能の実装
+ - 仮想マシン定義のXMLから、仮想ハードディスクのパスを特定する
