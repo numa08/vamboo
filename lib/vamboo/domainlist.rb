@@ -1,6 +1,7 @@
 require "libvirt"
 require "zlib"
 require "logger"
+require "archive/tar/minitar"
 
 class DomainList
 	attr_reader :list
@@ -29,7 +30,7 @@ class Domain
 	end
 
 	def backup(target_path)
-		log = Logger.new(STDOUT)
+		log = Logger.new("#{target_path}/#{@name}.log")
 		log.formatter = proc do |severity, datetime, progname, msg|
    				"#{@name}:#{datetime}: #{msg}\n"
 		end
@@ -73,14 +74,14 @@ class Domain
 		end
 
 		log.info("Archive")
-		# Zlib::GzipWriter.open("#{target_path}/#{@name}.tar.gz") do |archive|
-		# 	out = Archive::Tar::Minitar::Output.new(archive)
-		# 	Find.find("#{tmp_path}") do |file|
-		# 		Archive::Tar::Minitar::pack_file(file, out)
-		# 	end
-		# 	out.close
-		# end	
-		# FileUtils.rmdir("#{tmp_path}", :force => true)
+		Zlib::GzipWriter.open("#{target_path}/#{@name}.tar.gz") do |archive|
+			out = Archive::Tar::Minitar::Output.new(archive)
+			Find.find("#{tmp_path}") do |file|
+				Archive::Tar::Minitar::pack_file(file, out)
+			end
+			out.close
+		end	
+		FileUtils.rm_rf("#{tmp_path}")
 
 		log.info("Complete backup")
 	end
