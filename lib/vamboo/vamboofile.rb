@@ -16,6 +16,14 @@ class VambooFile
 
 	def loadDomains
 		domains = eval(File.read("#{@vamboo_home}/#{Vamboofile}"))
+		domains.each do |domain|
+			unless domain.isDefined?
+				raise "#{domain.name} is not defined!!"
+			end
+			unless domain.vmhdIsExist?
+				raise "#{domain.name}'s vmhd is not exist!!"
+			end
+		end
 		domains
 	end
 end
