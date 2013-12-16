@@ -16,6 +16,8 @@
 
 ## 使い方
 
+### 設定ファイルの記述
+
 まず、設定ファイルの配置を行います。
 
 	vamboo init
@@ -33,11 +35,28 @@ DomainList.define do
 	add("my_domay", "/path/to/domain/hd") 
 end
 ```
+### バックアップ実行
 
 `Vamboofile`に記述された仮想マシンを全てバックアップを行うには、次のコマンドから行います。
 
 	vamboo full_backup [backup destination path]
 
+### 仮想マシンの復元
+
+バックアップをとったファイルをそれぞれ次ディレクトリに再設置します。
+
+ - `<domain_name>.xml` -> `/etc/libvirt/qemu`
+ - `<domain_name>.img` -> `/var/lib/libvirt/images`
+
+次のコマンドを実行します
+
+```sh
+virsh define /etc/libvirt/qemu/<domain_name>.xml
+virsh start <domain_name>
+```
+
+
+この手順で、仮想マシンの復元と起動ができます。
 ## TODO
 
  - 特定の仮想マシンのバックアップ機能の実装
