@@ -100,4 +100,8 @@ class Domain
 	def vmhdIsExist?
 		File.exist?(@vmhd_path)
 	end
+
+	def verify
+		"#{@name}	#{@vmhd_path}"
+	end
 end
