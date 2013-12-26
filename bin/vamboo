@@ -30,6 +30,14 @@ class VambooCLI < Thor
     #domain = vamboo.findDomain(name, vmhd_path)
     #domain.backup
   end
+
+  desc "verify","show virtual machines, that target of backup"
+  def verify
+    vamboo = VambooKernel.new(Vamboo.default_vamboo_home)
+    vamboo.domains.each do |domain|
+      puts domain.verify
+    end
+  end
 end
 
 VambooCLI.start
