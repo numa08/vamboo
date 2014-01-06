@@ -2,5 +2,5 @@ require "vamboo/domainlist"
 DomainList.define do
 	#define your vm
 	#exsamble
-	#add("my_domay", "/path/to/domain/hd")
+	#add("my_domay")
 end
