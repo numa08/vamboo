@@ -31,8 +31,8 @@
 require "vamboo/domainlist" 
 
 DomainList.define do 
-	#add("仮想マシンのドメイン名", "仮想ハードディスクのパス")
-	add("my_domay", "/path/to/domain/hd") 
+	#add("仮想マシンのドメイン名")
+	add("my_domay") 
 end
 ```
 ### バックアップ実行

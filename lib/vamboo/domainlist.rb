@@ -2,6 +2,7 @@ require "libvirt"
 require "zlib"
 require "logger"
 require "archive/tar/minitar"
+require "rexml/document"
 
 class DomainList
 	attr_reader :list
@@ -16,17 +17,23 @@ class DomainList
 		instance_eval(&block)
 	end
 
-	def add(name, vmhd_path)
-		@list.push(Domain.new(name, vmhd_path))
+	def add(name)
+		@list.push(Domain.new(name))
 	end
 end
 
 class Domain
-	attr_reader :name, :vmhd_paths
+	attr_reader :name, :vmhd_pathes
 
-	def initialize(name, vmhd_path)
+	def initialize(name)
 		@name = name
-		@vmhd_path = vmhd_path
+		conn = Libvirt::open("qemu:///system")
+		domain = conn.lookup_domain_by_name(@name)
+		xml = REXML::Document.new(domain.xml_desc)
+		@vmhd_pathes = xml.elements.to_a("domain/devices/disk[@type='file']").map do |dev|
+			dev.elements['source'].attributes['file']
+		end
+		conn.close
 	end
 
 	def backup(target_path)
@@ -56,16 +63,20 @@ class Domain
 		end
 
 		log.info("Compress vmhd")
-		File.open("#{@vmhd_path}", "rb") do |vmhd|
-			Zlib::GzipWriter.open("#{tmp_path}/#{@name}.img.gz", Zlib::BEST_COMPRESSION) do |gz|
-				offset = 0
-				length = 1024
-				while offset < vmhd.size
-					gz.print(IO.binread(vmhd.path, length, offset))
-					offset += length
+		@vmhd_pathes.each do |vmhd_path|
+			File.open("#{vmhd_path}", "rb") do |vmhd|
+				name = File.basename(vmhd)
+				Zlib::GzipWriter.open("#{tmp_path}/#{name}.gz", Zlib::BEST_COMPRESSION) do |gz|
+					offset = 0
+					length = 1024
+					while offset < vmhd.size
+						gz.print(IO.binread(vmhd.path, length, offset))
+						offset += length
+					end
 				end
 			end
 		end
+
 
 		if active
 			log.info("Start")
@@ -98,10 +109,12 @@ class Domain
 	end
 
 	def vmhdIsExist?
-		File.exist?(@vmhd_path)
+		@vmhd_pathes.all? do |vmhd_path|
+			File.exist?(vmhd_path)
+		end
 	end
 
 	def verify
-		"#{@name}	#{@vmhd_path}"
+		"#{@name}	#{@vmhd_pathes}"
 	end
 end
