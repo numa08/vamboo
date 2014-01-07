@@ -6,8 +6,8 @@ require 'vamboo/version'
 Gem::Specification.new do |spec|
   spec.name          = "vamboo"
   spec.version       = Vamboo::VERSION
-  spec.authors       = ["numa08"]
-  spec.email         = ["n511287@gmail.com"]
+  spec.authors       = ["numa08", "funabiki.t"]
+  spec.email         = ["n511287@gmail.com", "funabiki.t@isoroot.jp"]
   spec.description   = "virtual machine backup util"
   spec.summary       = ""
   spec.homepage      = ""
