@@ -3,6 +3,7 @@
 require "vamboo"
 require "vamboo/vamboofile"
 require "thor"
+require "logger"
 
 class VambooCLI < Thor
   desc "init", "Create configuration files at /usr/local/etc/vamboo or VAMBOO_HOME"
@@ -14,14 +15,21 @@ class VambooCLI < Thor
   desc "full_backup","Backup all virtual machines there are written in ${VAMBOO_HOME}/vm_glass.list"
   def full_backup(dest_dir)
     vamboo = VambooKernel.new(Vamboo.default_vamboo_home)
+    log = Logger.new("#{Vamboo.default_vamboo_home}/backup.log")
+    log.formatter = proc do |severity, datetime, progname, msg|
+          "#{@name}:#{datetime}: #{msg}\n"
+    end
+    log.info("Start Backup")
     threads = vamboo.domains.map do |domain|
       Thread.new do
+        log.info("Backup #{domain.name}")
         domain.backup(dest_dir)
       end
     end
     threads.each do |thread|
       thread.join
     end
+    log.info("Finish backup")
   end
 
   desc "backup NAME VMHD_PATH","Back up specified virtual machine there are VM_NAME, VMHD_PATH"
