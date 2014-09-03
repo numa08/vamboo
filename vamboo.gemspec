@@ -19,12 +19,10 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
   spec.bindir        = 'bin'
 
+  spec.add_runtime_dependency "thor", "~> 0.19"
+  spec.add_runtime_dependency "ruby-libvirt", "~> 0.5"
+  spec.add_runtime_dependency "archive-tar-minitar", "~> 0.5"
+
   spec.add_development_dependency "bundler", "~> 1.3"
   spec.add_development_dependency "rake" , "~> 10.1"
-  spec.add_development_dependency "thor" , '~> 0.19.1'
-  spec.add_development_dependency "ruby-libvirt" , '~> 0.5.2'
-  spec.add_development_dependency "archive-tar-minitar" , "~> 0.5.2"
-  spec.add_runtime_dependency "thor" , "~> 0.19.1"
-  spec.add_runtime_dependency "ruby-libvirt", "~> 0.5.2"
-  spec.add_runtime_dependency "archive-tar-minitar" , "~> 0.5.2"
 end
