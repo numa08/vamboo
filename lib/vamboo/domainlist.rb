@@ -62,11 +62,30 @@ class Domain
 			file.write(xml)
 		end
 
+		log.info("Copy vmhd")
+		threads = @vmhd_pathes.map do |vmhd_path|
+			Thread.new do
+				name = File.basename(vmhd_path)
+				FileUtils.cp("#{vmhd_path}", "#{tmp_path}/#{name}")
+			end
+		end
+
+		threads.each do |t|
+			t.join
+		end
+
+		if active
+			log.info("Start")
+			domain.create
+			sleep(10) until domain.active?
+		end
+
 		log.info("Compress vmhd")
 		@vmhd_pathes.each do |vmhd_path|
-			File.open("#{vmhd_path}", "rb") do |vmhd|
-				name = File.basename(vmhd)
-				Zlib::GzipWriter.open("#{tmp_path}/#{name}.gz", Zlib::BEST_COMPRESSION) do |gz|
+			name = File.basename(vmhd_path)
+			tmp = "#{tmp_path}/#{name}"
+			File.open(tmp, "rb") do |vmhd|
+				Zlib::GzipWriter.open("#{tmp}.gz", Zlib::BEST_COMPRESSION) do |gz|
 					offset = 0
 					length = 1024
 					while offset < vmhd.size
@@ -75,13 +94,7 @@ class Domain
 					end
 				end
 			end
-		end
-
-
-		if active
-			log.info("Start")
-			domain.create
-			sleep(10) until domain.active?
+			FileUtils.rm(tmp, {:force => true})
 		end
 
 		log.info("Archive")
