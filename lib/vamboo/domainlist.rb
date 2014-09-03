@@ -83,8 +83,9 @@ class Domain
 		log.info("Compress vmhd")
 		@vmhd_pathes.each do |vmhd_path|
 			name = File.basename(vmhd_path)
-			File.open("#{tmp_path}/#{name}", "rb") do |vmhd|
-				Zlib::GzipWriter.open("#{tmp_path}/#{name}.gz", Zlib::BEST_COMPRESSION) do |gz|
+			tmp = "#{tmp_path}/#{name}"
+			File.open(tmp, "rb") do |vmhd|
+				Zlib::GzipWriter.open("#{tmp}.gz", Zlib::BEST_COMPRESSION) do |gz|
 					offset = 0
 					length = 1024
 					while offset < vmhd.size
@@ -93,6 +94,7 @@ class Domain
 					end
 				end
 			end
+			FileUtils.rm(tmp, {:force => true})
 		end
 
 		log.info("Archive")
