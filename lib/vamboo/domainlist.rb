@@ -1,3 +1,4 @@
+require "date"
 require "libvirt"
 require "zlib"
 require "logger"
@@ -17,16 +18,17 @@ class DomainList
 		instance_eval(&block)
 	end
 
-	def add(name)
-		@list.push(Domain.new(name))
+	def add(name, rotation)
+		@list.push(Domain.new(name, rotation))		
 	end
 end
 
 class Domain
-	attr_reader :name, :vmhd_pathes
+	attr_reader :name, :rotation, :vmhd_pathes
 
-	def initialize(name)
+	def initialize(name, rotation)
 		@name = name
+		@rotation = rotation
 		conn = Libvirt::open("qemu:///system")
 		domain = conn.lookup_domain_by_name(@name)
 		xml = REXML::Document.new(domain.xml_desc)
@@ -98,7 +100,8 @@ class Domain
 		end
 
 		log.info("Archive")
-		Zlib::GzipWriter.open("#{target_path}/#{@name}.tar.gz") do |archive|
+		file_name = "#{@name}.#{Date.today.strftime("%Y%m%d")}.tar.gz"
+		Zlib::GzipWriter.open("#{target_path}/#{file_name}") do |archive|
 			out = Archive::Tar::Minitar::Output.new(archive)
 			Find.find("#{tmp_path}") do |file|
 				Archive::Tar::Minitar::pack_file(file, out)
@@ -106,7 +109,13 @@ class Domain
 			out.close
 		end	
 		FileUtils.rm_rf("#{tmp_path}")
-
+		
+		if @rotation > 0 
+			old = Date.today - @rotation
+			old_file = "#{@name}.#{old}.tar.gz"
+			log.info("Remove old file #{target_path}/#{old}")
+			FileUtils.rm_rf("#{target_path}/#{old}")
+		end
 		log.info("Complete backup")
 	end
 
