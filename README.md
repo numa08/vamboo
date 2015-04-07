@@ -31,8 +31,8 @@
 require "vamboo/domainlist" 
 
 DomainList.define do 
-	#add("仮想マシンのドメイン名")
-	add("my_domay") 
+	#add("仮想マシンのドメイン名", ローテーションの期間)
+	add("my_domay", 7) 
 end
 ```
 ### バックアップ実行
